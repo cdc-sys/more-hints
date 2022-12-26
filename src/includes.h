@@ -11,5 +11,3 @@
 
 using namespace cocos2d;
 using namespace gd;
-
-#include "GameObjectHook.h"
