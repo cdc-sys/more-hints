@@ -2,8 +2,7 @@
 #include <matdash/console.hpp>
 #include <matdash/boilerplate.hpp>
 
-bool faded = true;
-bool got_position = true;
+bool hintAnimationFinished = true;
 
 class NodeTools {
 public:
@@ -15,142 +14,62 @@ public:
 };
 
 bool PlayLayer_init(gd::PlayLayer* self) {
-    faded = true;
-    got_position = false;
+    hintAnimationFinished = true;
     return matdash::orig<&PlayLayer_init>(self);
 }
 void PlayLayer_showHint(gd::PlayLayer* self) {
-    if (!faded) {
+    std::cout << self->m_level->m_nLevelID << std::endl;
+    //std::cout << self->m_level->m_sLevelName;
+    if (!hintAnimationFinished) {
         return;
     }
-    faded = false;
+    hintAnimationFinished = false;
     auto director = CCDirector::sharedDirector();
     auto winsize = director->getWinSize();
     auto levelID = self->m_level->m_nLevelID;
     const char* hint = "";
     float scale = 0.7f;
     float delay = 3.0f;
-    switch (levelID) {
-    default:
-        hint = "";
-        break;
-    case 1:
-        // Stereo Madness
-        hint = "Click / Space to jump over the spikes";
-        break;
-    case 2:
-        // Back on track
-        hint = "Touching a Jump Pad will launch you in the air";
-        scale = 0.6f;
-        delay = 4.0f;
-        break;
-    case 3:
-        // Polargeist
-        hint = "Click while touching a ring to jump mid air";
-        break;
-    case 4:
-        // Dry Out
-        hint = "Touching a yellow portal will flip your gravity upside down";
-        scale = 0.52f;
-        delay = 4.5f;
-        break;
-    case 5:
-        // Base after Base
-        hint = "Click / Space to jump over the spikes";
-        break;
-    case 6:
-        // Can't let go
-        hint = "Click / Space to jump on the block";
-        break;
-    case 7:
-        // Jumper
-        hint = "Click / Space to jump on the block";
-        break;
-    case 8:
-        // Time machine
-        hint = "Hold Left Click / Space to make progress in the level";
-        scale = 0.55f;
-        delay = 4.0f;
-        break;
-    case 9:
-        // cycles
-        hint = "Click / Space to switch gravity in the Ball gamemode";
-        scale = 0.55f;
-        delay = 4.0f;
-        break;
-    case 10:
-        // xstep
-        hint = "Click / Space to switch gravity in the Ball Gamemode";
-        scale = 0.55f;
-        delay = 4.0f;
-        break;
-    case 11:
-        // clutterfunk
-        hint = "Touching a Mini Portal will make your icon smaller";
-        scale = 0.6f;
-        delay = 4.0f;
-        break;
-    case 12:
-        // theory of everything
-        hint = "Touching a Mini Portal will make your icon smaller";
-        scale = 0.6f;
-        delay = 4.0f;
-        break;
-    case 13:
-        // electroman adventures
-        hint = "Touching a Breakable Block will make it disappear";
-        scale = 0.6f;
-        delay = 4.0f;
-        break;
-    case 14:
-        // clubstep
-        hint = "";
-        break;
-    case 15:
-        // electrodynamix
-        hint = "Your speed changes when you touch a Speed Portal";
-        scale = 0.5f;
-        delay = 4.0f;
-        break;
-    case 16:
-        // hexagon force
-        hint = "You split into two when touching a Dual Portal";
-        scale = 0.6f;
-        delay = 4.0f;
-        break;
-    case 17:
-        // blast processing
-        hint = "The wave goes up while you're holding";
-        break;
-    case 18:
-        // theory of everything 2
-        hint = "";
-        break;
-    case 19:
-        // geometrical dominator
-        hint = "Click / Space to jump over the monster";
-        break;
-    case 20:
-        // deadlocked
-        hint = "";
-        break;
-    case 21:
-        // fingerdash
-        hint = "Hold to dash!";
-        break;
-    case 22:
-        // dash lmfao
-        hint = "2.2 when?";
-        break;
-    }
-    auto text = CCLabelBMFont::create(hint, "bigFont.fnt");
+    struct HintData {
+        const char* hint = "";
+        float scale = 0.7f;
+        float delay = 4.0f;
+    };
+
+    std::unordered_map<int, HintData> hints = {
+        {1, {"Click / Space to jump over the spikes"}},
+        {2, {"Touching a Jump Pad will launch you in the air", 0.6f,4.0f}},
+        {3, {"Click while touching a ring to jump mid air"}},
+        {4,{"Touching a yellow portal will flip your gravity upside down",0.52f,4.0f}},
+        {5,{"Click / Space to jump over the spikes"}},
+        {6,{"Click / Space to jump on the block"}},
+        {7,{"Click / Space to jump on the block"}},
+        {8,{"Hold Left Click / Space to make progress in the level",0.55f,4.0f}},
+        {9,{"Click / Space to switch gravity in the Ball gamemode",0.55f,4.0f}},
+        {10,{"Click / Space to switch gravity in the Ball Gamemode",0.55f,4.0f}},
+        {11,{"Touching a Mini Portal will make your icon smaller",0.6f,4.0f}},
+        {12,{"Touching a Mini Portal will make your icon smaller",0.6f,4.0f}},
+        {13,{"Touching a Breakable Block will make it disappear",0.6f,4.0f}},
+        {14,{""}},
+        {15,{"Your speed changes when you touch a Speed Portal",0.5f,4.0f}},
+        {16,{"You split into two when touching a Dual Portal",0.6f,4.0f}},
+        {17,{"The wave goes up while you're holding"}},
+        {18,{""}},
+        {19,{"Click / Space to jump over the monster"}},
+        {20,{""}},
+        {21,{"Hold to dash!"}},
+        {22,{"2.2 when?"}},
+        {3001,{"This level is absolutely filled with bugs"}}
+    };
+    //std::cout << "hint: " << hints[levelID].hint << " scale: " << hints[levelID].scale << " delay: " << hints[levelID].delay << std::endl;
+    auto text = CCLabelBMFont::create(hints[levelID].hint, "bigFont.fnt");
     text->setPosition({ winsize.width * 0.5f,winsize.height * 0.5f + 60.f });
-    text->setScale(scale);
+    text->setScale(hints[levelID].scale);
     text->setOpacity(0);
     text->runAction(
         CCSequence::create(
         CCFadeIn::create(0.5),
-        CCDelayTime::create(delay),
+        CCDelayTime::create(hints[levelID].delay),
         CCFadeOut::create(0.5),
         CCCallFuncO::create(text,callfuncO_selector(NodeTools::onFinishAnim),text),
         nullptr
@@ -159,14 +78,22 @@ void PlayLayer_showHint(gd::PlayLayer* self) {
     text->setZOrder(999);
     self->addChild(text);
 }
-
+void PlayLayer_destroyPlayer(gd::PlayLayer* self, PlayerObject* player, GameObject* object) {
+    matdash::orig<&PlayLayer_destroyPlayer>(self, player, object);
+    if (self->m_currentAttempt == 2 && self->m_jumpCount == 0 && player->getPositionX() > 16.9) {
+        if (hintAnimationFinished) {
+            PlayLayer_showHint(self);
+        }
+    }
+}
 void mod_main(HMODULE) {
     // this creates a console window whenever the mod is injected
     // which is very useful for debugging, but make sure to remove
     // on release builds! :D
     matdash::create_console();
 
-
+    //0x20A1A0
+    matdash::add_hook<&PlayLayer_destroyPlayer>(gd::base + 0x20A1A0);
     matdash::add_hook<&PlayLayer_showHint>(gd::base + 0x20A910);
     matdash::add_hook<&PlayLayer_init>(gd::base + 0x1FB780);
 }
