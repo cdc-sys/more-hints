@@ -3,7 +3,7 @@
 #include <matdash/boilerplate.hpp>
 
 bool hintAnimationFinished = true;
-
+// stupid class
 class NodeTools {
 public:
     void onFinishAnim(cocos2d::CCObject* sender) {
@@ -14,10 +14,12 @@ public:
 };
 
 bool PlayLayer_init(gd::PlayLayer* self) {
+    // Resetting the variable to allow it to show (in case of a pause quit for example)
     hintAnimationFinished = true;
     return matdash::orig<&PlayLayer_init>(self);
 }
 void PlayLayer_showHint(gd::PlayLayer* self) {
+    // Modified decomp of PlayLayer::showHint
     std::cout << self->m_level->m_nLevelID << std::endl;
     //std::cout << self->m_level->m_sLevelName;
     if (!hintAnimationFinished) {
@@ -80,6 +82,7 @@ void PlayLayer_showHint(gd::PlayLayer* self) {
 }
 void PlayLayer_destroyPlayer(gd::PlayLayer* self, PlayerObject* player, GameObject* object) {
     matdash::orig<&PlayLayer_destroyPlayer>(self, player, object);
+    // the check as far as i can tell
     if (self->m_currentAttempt == 2 && self->m_jumpCount == 0 && player->getPositionX() > 16.9) {
         if (hintAnimationFinished) {
             PlayLayer_showHint(self);
@@ -87,10 +90,6 @@ void PlayLayer_destroyPlayer(gd::PlayLayer* self, PlayerObject* player, GameObje
     }
 }
 void mod_main(HMODULE) {
-    // this creates a console window whenever the mod is injected
-    // which is very useful for debugging, but make sure to remove
-    // on release builds! :D
-    //matdash::create_console();
 
     matdash::add_hook<&PlayLayer_destroyPlayer>(gd::base + 0x20A1A0);
     matdash::add_hook<&PlayLayer_showHint>(gd::base + 0x20A910);
