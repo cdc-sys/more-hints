@@ -90,9 +90,8 @@ void mod_main(HMODULE) {
     // this creates a console window whenever the mod is injected
     // which is very useful for debugging, but make sure to remove
     // on release builds! :D
-    matdash::create_console();
+    //matdash::create_console();
 
-    //0x20A1A0
     matdash::add_hook<&PlayLayer_destroyPlayer>(gd::base + 0x20A1A0);
     matdash::add_hook<&PlayLayer_showHint>(gd::base + 0x20A910);
     matdash::add_hook<&PlayLayer_init>(gd::base + 0x1FB780);
