@@ -1,4 +1,4 @@
 # more-hints
-stupid mod i made that allows you to have more hint messages in play layer
+stupid mod i made that adds hint messages for all the official levels
 
 sorry if the code is terrible
