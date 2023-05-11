@@ -1,4 +1,22 @@
 # more-hints
-stupid mod i made that adds hint messages for all the official levels
+This is a mod I made to add stupid hint messages to other levels.
 
-sorry if the code is terrible
+# What exactly does this do?
+Exactly as it says!
+
+## Stereo Madness and Polargeist
+These levels have hints that are shown using the show hint function.
+```cpp
+if (levelID > 2){
+  return;
+if (levelID == 1){
+  ...
+}
+else{
+  ...
+}
+```
+# How do I add custom hints?
+Edit the code motherfucka
+
+### cdc 2023
